@@ -76,20 +76,24 @@ async def query(db_session: DatabaseDependency) -> list[AtletaOut]:
 
 
 @router.get(
-    '/{id}', 
+    '/{id, nome, cpf}', 
     summary='Consulta um Atleta pelo id',
     status_code=status.HTTP_200_OK,
     response_model=AtletaOut,
 )
-async def get(id: UUID4, db_session: DatabaseDependency) -> AtletaOut:
+async def get(id: UUID4, nome: Query(str, defaut=None, cpf: Query(str, defaut=None, db_session: DatabaseDependency) -> AtletaOut:
     atleta: AtletaOut = (
         await db_session.execute(select(AtletaModel).filter_by(id=id))
+        await db_session.execute(select(AtletaModel).filter_by(nome=nome))
+        await db_session.execute(select(AtletaModel).filter_by(cpf=cpf))
+        
     ).scalars().first()
 
+       
     if not atleta:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
-            detail=f'Atleta não encontrado no id: {id}'
+            detail=f'Atleta não encontrado no cpf: {cpf}'
         )
     
     return atleta
